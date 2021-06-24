@@ -4,8 +4,7 @@ import retrofit2.Retrofit;
 
 public class ApiUtils {
 
-    private static String IP = "192.168.1.109";
-    private static String BASE_URL = "http://"+IP+"/android";
+    private static String BASE_URL = "http://192.168.1.109/android/"; // edit your API URL here
 
     public ApiUtils() {
     }
