@@ -1,9 +1,12 @@
 package com.aprianto.p13apiandroid.Barang;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,17 +22,17 @@ import com.aprianto.p13apiandroid.R;
 import java.util.HashMap;
 import java.util.List;
 
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ActivityBarang extends AppCompatActivity {
+public class ActivityBarang extends AppCompatActivity implements listenerBarang {
 
     private ApiService api_services;
     TextView tv_hasil;
     EditText ed_kode, ed_nama, ed_satuan, ed_hjual, ed_hbeli, ed_diskon;
-    Button btn_simpan;
+    Button btn_save, btn_update, btn_delete, btn_cancel;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +40,23 @@ public class ActivityBarang extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // init layout element
-        tv_hasil = findViewById(R.id.tv_hasil);
+//        tv_hasil = findViewById(R.id.tv_hasil);
         ed_kode = findViewById(R.id.ed_kode);
         ed_nama = findViewById(R.id.ed_nama);
         ed_satuan = findViewById(R.id.ed_satuan);
         ed_hjual = findViewById(R.id.ed_hjual);
         ed_hbeli = findViewById(R.id.ed_hbeli);
         ed_diskon = findViewById(R.id.ed_diskon);
-        btn_simpan = findViewById(R.id.btn_simpan);
+        btn_save = findViewById(R.id.btn_save);
+        btn_update = findViewById(R.id.btn_update);
+        btn_delete = findViewById(R.id.btn_delete);
+        btn_cancel = findViewById(R.id.btn_cancel);
+        recyclerView = findViewById(R.id.recyclerView);
 
         api_services = ApiUtils.getApiService();
 
 
-        btn_simpan.setOnClickListener(view -> {
+        btn_save.setOnClickListener(view -> {
             insert_data(
                     ed_kode.getText().toString(),
                     ed_nama.getText().toString(),
@@ -60,10 +67,13 @@ public class ActivityBarang extends AppCompatActivity {
             );
         });
 
+        btn_cancel.setOnClickListener(view -> reset_input());
+
         read_data();
     }
 
     public void read_data(){
+        reset_input();
         api_services.getDataBarang().enqueue(new Callback<GetDataBarang>() {
             @Override
             public void onResponse(Call<GetDataBarang> call, Response<GetDataBarang> response) {
@@ -73,11 +83,17 @@ public class ActivityBarang extends AppCompatActivity {
                     // Mapping gson result ke list untuk ditampilkan
                     List<ModelBarang> data_barang = response.body().getHasil();
 
-                    String out_print = "";
-                    for(ModelBarang barang:data_barang){
-                        out_print = out_print+" "+barang.getKode()+" "+barang.getNama()+" "+barang.getSatuan()+" "+barang.getHargajual()+" "+barang.getHargabeli()+" "+barang.getDiskon()+"\n";
-                    }
-                    tv_hasil.setText(out_print);
+                    AdapterBarang adapter = new AdapterBarang(data_barang, getApplicationContext(), ActivityBarang.this::onItemClicked);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setNestedScrollingEnabled(false);
+
+
+//                    String out_print = "";
+//                    for(ModelBarang barang:data_barang){
+//                        out_print = out_print+" "+barang.getKode()+" "+barang.getNama()+" "+barang.getSatuan()+" "+barang.getHargajual()+" "+barang.getHargabeli()+" "+barang.getDiskon()+"\n";
+//                    }
+//                    tv_hasil.setText(out_print);
                 }
             }
 
@@ -124,5 +140,23 @@ public class ActivityBarang extends AppCompatActivity {
         ed_hjual.setText("");
         ed_hbeli.setText("");
         ed_diskon.setText("");
+        btn_save.setVisibility(View.VISIBLE);
+        btn_update.setVisibility(View.INVISIBLE);
+        btn_delete.setVisibility(View.INVISIBLE);
+        btn_cancel.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onItemClicked(String kode, String nama, String satuan, String hjual, String hbeli, String diskon) {
+        btn_save.setVisibility(View.INVISIBLE);
+        btn_update.setVisibility(View.VISIBLE);
+        btn_delete.setVisibility(View.VISIBLE);
+        btn_cancel.setVisibility(View.VISIBLE);
+        ed_kode.setText(kode);
+        ed_nama.setText(nama);
+        ed_satuan.setText(satuan);
+        ed_hjual.setText(hjual);
+        ed_hbeli.setText(hbeli);
+        ed_diskon.setText(diskon);
     }
 }
