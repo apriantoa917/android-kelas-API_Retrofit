@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,8 +15,9 @@ import com.aprianto.p13apiandroid.API_config.ApiService;
 import com.aprianto.p13apiandroid.API_config.ApiUtils;
 import com.aprianto.p13apiandroid.API_config.Barang.GetDataBarang;
 import com.aprianto.p13apiandroid.API_config.Barang.ModelBarang;
+import com.aprianto.p13apiandroid.API_config.Barang.PostDeleteBarang;
 import com.aprianto.p13apiandroid.API_config.Barang.PostInsertBarang;
-import com.aprianto.p13apiandroid.API_config.PostDeleteBarang;
+import com.aprianto.p13apiandroid.API_config.Barang.PostUpdateBarang;
 import com.aprianto.p13apiandroid.R;
 
 import java.util.HashMap;
